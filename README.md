@@ -1,0 +1,1 @@
+# sample-adh-graphql_connector-powerbi
