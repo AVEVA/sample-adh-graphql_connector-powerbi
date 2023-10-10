@@ -67,7 +67,7 @@ At this point, the data should be consumable in a Power BI Dashboard!
 
 1. Open Visual Studio Code whith the Power Query SDK installed
 1. Open the sample folder
-1. Set a credential. See [microsoft's documentation](https://learn.microsoft.com/en-us/power-query/power-query-sdk-vs-code#set-credential_ for more information.
+1. Set a credential. See [microsoft's documentation](https://learn.microsoft.com/en-us/power-query/power-query-sdk-vs-code#set-credential) for more information.
 1. Evaluate `DataHubGraphQLConnector.query.pq`. See [micosoft's documentation](https://learn.microsoft.com/en-us/power-query/power-query-sdk-vs-code#evaluate-a-query-and-the-results-panel) for more information.
 
 ---
