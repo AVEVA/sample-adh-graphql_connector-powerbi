@@ -39,66 +39,36 @@ Note: For more information refer to (Microsoft's distribution documentation)[htt
 
 ## Using the Sample Connector
 
+1. Generate a graph QL query within AVEVA Data Hub using the (GraphQL console)[https://docs.aveva.com/bundle/aveva-data-hub/page/1263333.html] to be used later.
 1. From Power BI Desktop, open Home > Get Data > More
 1. The connector should be available as "Sample AVEVA™ Data Hub QraphQL Events (Beta)" in the category "Online Services"
 1. Select it and click "Connect"
 1. If using the connector for the first time, you may get another warning regarding untrusted connectors
 1. When prompted for the Namespace Id, enter your Namespace Id
 1. Click OK, and you will be prompted to login if you have not already, using an organizational account
-1. Once logged in, the Power Query Editor should open with the results.
+1. Once logged in, the Power Query Editor should open and you will have the option to supply the previously generated GraphQL query
+1. Click Invoke
 
 When using the Power Query Advanced Editor, the function `DataHubGraphQLConnector.Contents` can be used where the input parameter is your Namespace Id.
 
 ## Using the Results
 
-The query will look something like:
+After you have made a query you should be left with a result that looks something like this:
 
-```C#
-let
-    Source = DataHubGraphQLConnector.Contents("PLACEHOLDER_NAMESPACE_ID")
-in
-    Source
-```
+![Power Query Editor Result](images/Power%20Query%20Editor%20Result.png)
 
-However, the results will be displayed as binary content, which is not directly consumable by Power BI. The binary first needs to be parsed. Data from AVEVA Data Hub is usually returned as JSON, but some endpoints can also return CSV format. Generally, if the parameter `form=csv` or `form=csvh` is being used, the content is returned in CSV format, otherwise the content is in JSON format. Not all endpoints support the `form` parameter.
-
-To parse the binary content, right click on it, and select either "CSV" or "JSON".
-
-If your content is CSV, the data should be ready to use. If the column headers are using default names like Column1, make sure you are using `form=csvh` (CSV with headers) instead of `form=csv`. Power BI should parse the headers from `csvh` format into column headers automatically.
-
-If your content is in JSON, you will now see a list of "Record" objects that are still not easily consumable. To convert the results to a table, right click the `List` header and select `To Table`, accepting the default options.
-
-This does little better, the data is then displayed as a list of "Record" objects under the header "Column1." However, now there is an icon with two arrows in that column header. Click that button, and then select what fields to use in the table, and expand out the data.
+To get the result in a format that is useable by Power BI you will need to expand the results. This can be done by clicking the expand icon ![Expand Icon](/images/Expand%20Icon.png) then clicking `Done` or `Expand to New Rows`. This may need to be repeated a few times to fully expand the results.
 
 Once the data is expanded, if necessary, right click on column headers and use the "Change Type" options to assign the proper types, as all fields are treated as strings by default.
 
-At this point, the data should be consumable in a Power BI Dashboard! The final query will look something like:
-
-```C#
-let
-    Source = ADHConnector_Sample.Contents("https://uswe.datahub.connect.aveva.com/", "api/v1/Tenants/{tenantid}/Namespaces/"),
-    Converted = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
-    Expanded = Table.ExpandRecordColumn(Converted, "Column1", {"Id", "Region", "Self", "Description", "State"}, {"Column1.Id", "Column1.Region", "Column1.Self", "Column1.Description", "Column1.State"})
-in
-    Expanded
-```
+At this point, the data should be consumable in a Power BI Dashboard!
 
 ## Tests
 
-Included is an automated test that runs the Appium WebDriver to make sure that the ADH Connector sample works. To run this test, you must fill in the [AppSettings.json](ADHConnectorTest/appsettings.placeholder.json) with the ADH URL and a tenant ID that allows login via Personal Microsoft Accounts. You must also fill in the email address and password of a Microsoft Account to use for login.
-
-This test will attempt to clear saved credentials, open the connector, and log in to AVEVA Data Hub using the provided credentials, then query the namespaces in that tenant. If this is successful, the test will pass.
-
-Since the test uses Appium WebDriver, updates to Power BI Desktop or other differences in the UI automation fields may prevent the test from passing in environments other than the internal AVEVA test agent. To resolve issues like this, use [inspect](https://docs.microsoft.com/en-us/windows/win32/winauto/inspect-objects) to validate the names and automation IDs used by the test.
-
-To run the test from the command line on the machine with Power BI Desktop, run:
-
-```shell
-dotnet restore
-dotnet test
-```
-
-**Note:** When running an Appium WebDriver test you should not move the mouse on that computer, or have anything else that can change the mouse movement or window focus during the test. Doing so can cause the test to fail.
+1. Open Visual Studio Code whith the Power Query SDK installed
+1. Open the sample folder
+1. Set a credential. See (microsoft's documentation)[https://learn.microsoft.com/en-us/power-query/power-query-sdk-vs-code#set-credential] for more information.
+1. Evaluate `DataHubGraphQLConnector.query.pq`. See (micosoft's documentation)[https://learn.microsoft.com/en-us/power-query/power-query-sdk-vs-code#evaluate-a-query-and-the-results-panel] for more information.
 
 ---
 
