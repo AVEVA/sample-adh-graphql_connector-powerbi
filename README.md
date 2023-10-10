@@ -24,7 +24,7 @@ The Sample AVEVA Data Hub Graph QL Connector for Power BI Desktop is used to get
 1. Rename `appsettings.placeholder.json` to `appsettings.json`
 1. Optionally update the ClientId parameter in `appsettings.json` with the client generated in the [Build Requirements](#build-requirements) section
 1. Optionally update the Resource parameter in `appsettings.json` if you are using a different region or non-production enivornment
-1. Build the project following (Microsoft's build and deploy documentaion)[https://learn.microsoft.com/en-us/power-query/install-sdk#build-and-deploy]
+1. Build the project following [Microsoft's build and deploy documentaion](https://learn.microsoft.com/en-us/power-query/install-sdk#build-and-deploy)
 
 ## Deploying the Sample Connector
 
@@ -35,11 +35,11 @@ The Sample AVEVA Data Hub Graph QL Connector for Power BI Desktop is used to get
 1. Copy the `.mez` file from either `/bin/AnyCPU/Debug` or `/bin/AnyCPU/Release` (depending on settings) into the new `Custom Connectors` folder
 1. Restart Power BI Desktop, and the connector should be available
 
-Note: For more information refer to (Microsoft's distribution documentation)[https://learn.microsoft.com/en-us/power-query/install-sdk#distribution-of-data-connectors]
+Note: For more information refer to [Microsoft's distribution documentation](https://learn.microsoft.com/en-us/power-query/install-sdk#distribution-of-data-connectors)
 
 ## Using the Sample Connector
 
-1. Generate a graph QL query within AVEVA Data Hub using the (GraphQL console)[https://docs.aveva.com/bundle/aveva-data-hub/page/1263333.html] to be used later.
+1. Generate a graph QL query within AVEVA Data Hub using the [GraphQL console](https://docs.aveva.com/bundle/aveva-data-hub/page/1263333.html) to be used later.
 1. From Power BI Desktop, open Home > Get Data > More
 1. The connector should be available as "Sample AVEVA™ Data Hub QraphQL Events (Beta)" in the category "Online Services"
 1. Select it and click "Connect"
@@ -67,8 +67,8 @@ At this point, the data should be consumable in a Power BI Dashboard!
 
 1. Open Visual Studio Code whith the Power Query SDK installed
 1. Open the sample folder
-1. Set a credential. See (microsoft's documentation)[https://learn.microsoft.com/en-us/power-query/power-query-sdk-vs-code#set-credential] for more information.
-1. Evaluate `DataHubGraphQLConnector.query.pq`. See (micosoft's documentation)[https://learn.microsoft.com/en-us/power-query/power-query-sdk-vs-code#evaluate-a-query-and-the-results-panel] for more information.
+1. Set a credential. See [microsoft's documentation](https://learn.microsoft.com/en-us/power-query/power-query-sdk-vs-code#set-credential_ for more information.
+1. Evaluate `DataHubGraphQLConnector.query.pq`. See [micosoft's documentation](https://learn.microsoft.com/en-us/power-query/power-query-sdk-vs-code#evaluate-a-query-and-the-results-panel) for more information.
 
 ---
 
