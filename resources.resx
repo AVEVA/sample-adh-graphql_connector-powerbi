@@ -121,6 +121,6 @@
     <value>Connect to AVEVA™ Data Hub Events with Graph QL</value>
   </data>
   <data name="ButtonTitle" xml:space="preserve">
-    <value>Sample AVEVA™ Data Hub QraphQL Events</value>
+    <value>Sample AVEVA™ Data Hub GraphQL Events</value>
   </data>
 </root>
