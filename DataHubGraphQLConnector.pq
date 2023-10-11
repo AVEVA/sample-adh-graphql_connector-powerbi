@@ -279,50 +279,6 @@ TryRetrieveParameterFromAppsettings = (parameter as text) =>
     in
         result;
 
-// Common library code
-Table.ToNavigationTableForce = (
-    table as table,
-    keyColumns as list,
-    nameColumn as text,
-    dataColumn as text,
-    itemKindColumn as text,
-    itemNameColumn as text,
-    isLeafColumn as text
-) as table =>
-    let
-        tableType = Value.Type(table),
-        newTableType = Type.AddTableKey(tableType, keyColumns, true) meta [
-            NavigationTable.NameColumn = nameColumn,
-            NavigationTable.DataColumn = dataColumn,
-            NavigationTable.ItemKindColumn = itemKindColumn,
-            NavigationTable.IsLeafColumn = isLeafColumn
-        ],
-        navigationTable = Value.ReplaceType(table, newTableType)
-    in
-        navigationTable;
-
-Table.ToNavigationTable = (
-    table as table,
-    keyColumns as list,
-    nameColumn as text,
-    dataColumn as text,
-    itemKindColumn as text,
-    itemNameColumn as text,
-    isLeafColumn as text
-) as table =>
-    let
-        tableType = Value.Type(table),
-        newTableType = Type.AddTableKey(tableType, keyColumns, true) meta [
-            NavigationTable.NameColumn = nameColumn,
-            NavigationTable.DataColumn = dataColumn,
-            NavigationTable.ItemKindColumn = itemKindColumn,
-            Preview.DelayColumn = itemNameColumn,
-            NavigationTable.IsLeafColumn = isLeafColumn
-        ],
-        navigationTable = Value.ReplaceType(table, newTableType)
-    in
-        navigationTable;
-
 Extension.LoadFunction = (name as text) =>
     let
         binary = Extension.Contents(name), asText = Text.FromBinary(binary)
@@ -330,7 +286,4 @@ Extension.LoadFunction = (name as text) =>
         Expression.Evaluate(asText, #shared);
 
 // Import functions from other files
-Namespaces = Extension.LoadFunction("Namespaces.pqm");
-Assets = Extension.LoadFunction("Assets.pqm");
-Streams = Extension.LoadFunction("Streams.pqm");
 GraphQL = Extension.LoadFunction("GraphQL.pqm");
