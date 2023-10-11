@@ -12,7 +12,7 @@ The Sample AVEVA Data Hub Graph QL Connector for Power BI Desktop is used to get
 
 1. [Visual Studio Code](https://code.visualstudio.com/)
 1. [Power Query SDK](https://marketplace.visualstudio.com/items?itemName=PowerQuery.vscode-powerquery-sdk)
-1. If not using the built in Power BI Client, register an Authorization Code Client in ADH and ensure that the registered client:
+1. Register an Authorization Code Client in ADH and ensure that the registered client:
    - Contains `https://oauth.powerbi.com/views/oauthredirect.html` in the list of Allowed Redirect URLs
    - Contains `https://login.microsoftonline.com/logout.srf` in the list of Allowed Logout Redirect URLs
    - Contains `https://oauth.powerbi.com` in the list of Allowed CORS Origins
@@ -22,7 +22,7 @@ The Sample AVEVA Data Hub Graph QL Connector for Power BI Desktop is used to get
 
 1. Open the sample in Visual Studio Code
 1. Rename `appsettings.placeholder.json` to `appsettings.json`
-1. Optionally update the ClientId parameter in `appsettings.json` with the client generated in the [Build Requirements](#build-requirements) section
+1. Update the ClientId parameter in `appsettings.json` with the client generated in the [Build Requirements](#build-requirements) section
 1. Optionally update the Resource parameter in `appsettings.json` if you are using a different region or non-production enivornment
 1. Build the project following [Microsoft's build and deploy documentaion](https://learn.microsoft.com/en-us/power-query/install-sdk#build-and-deploy)
 
