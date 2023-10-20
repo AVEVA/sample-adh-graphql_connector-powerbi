@@ -284,6 +284,7 @@ GetAccessTokenClientCredential = (grantType, clientId, clientSecret) =>
                     #"Content-type" = "application/x-www-form-urlencoded",
                     #"Accept" = "application/json"
                 ],
+                ManualCredentials = true,
                 IsRetry = true
             ]
         ),
