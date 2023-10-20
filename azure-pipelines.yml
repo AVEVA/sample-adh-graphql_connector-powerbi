@@ -50,8 +50,7 @@ jobs:
             echo Compiling extension
             pqsdktools\tools\MakePQX.exe compile
             echo Setting credentials
-            echo {"AuthenticationKind": "UsernamePassword", "AuthenticationProperties": {"Username": "$(ClientId)", "Password": "TEST"}} > cred.json
-            more cred.json
+            echo {"AuthenticationKind": "UsernamePassword", "AuthenticationProperties": {"Username": "$(ClientId)", "Password": "$(ClientSecret)"}} > cred.json
             pqsdktools\tools\PQTest.exe set-credential --extension "bin\AnyCPU\Debug\s.mez" --queryFile "DataHubGraphQLConnector.query.pq" --prettyPrint < cred.json
             echo Running unit tests
             pqsdktools\tools\PQTest.exe run-test --extension "bin\AnyCPU\Debug\s.mez" --queryFile "DataHubGraphQLConnector.query.pq" --prettyPrint
