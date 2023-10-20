@@ -51,7 +51,7 @@ jobs:
             pqsdktools\tools\MakePQX.exe compile
             echo Setting credentials
             echo {"AuthenticationKind": "UsernamePassword", "Properties": {"Username": "$CLIENTID", "Password": "$CLIENTSECRET"}} > cred.json
-            pqsdktools\tools\PQTest.exe set-credential --extension "bin\AnyCPU\Debug\s.mez" --queryFile "ADHPowerQuery.query.pq" --prettyPrint < cred.json
+            pqsdktools\tools\PQTest.exe set-credential --extension "bin\AnyCPU\Debug\s.mez" --queryFile "DataHubGraphQLConnector.query.pq" --prettyPrint < cred.json
             echo Running unit tests
-            pqsdktools\tools\PQTest.exe run-test --extension "bin\AnyCPU\Debug\s.mez" --queryFile "ADHPowerQuery.query.pq" --prettyPrint
+            pqsdktools\tools\PQTest.exe run-test --extension "bin\AnyCPU\Debug\s.mez" --queryFile "DataHubGraphQLConnector.query.pq" --prettyPrint
             
