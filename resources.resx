@@ -141,4 +141,25 @@
   <data name="ClientCredentialsLabel" xml:space="preserve">
     <value>AVEVA Data Hub GraphQL</value>
   </data>
+  <data name="OAuthType" xml:space="preserve">
+    <value>OAuth</value>
+  </data>
+  <data name="ErrorFailedToRetrieveExpTimeMessage" xml:space="preserve">
+    <value>Unable to retrieve expiry time from ADH token. The access token either does  not have the expiry time or the payload of the token is malformed.</value>
+  </data>
+  <data name="ErrorFailedToRetrieveExpTimeReason" xml:space="preserve">
+    <value>Failed to retrieve expiry time from ADH token</value>
+  </data>
+  <data name="ErrorInvalidConfigurationParameterMessage" xml:space="preserve">
+    <value>Failed to retrieve configuration parameter from file 'ADHConnectorConfiguration.json'. Parameter Name: </value>
+  </data>
+  <data name="ErrorInvalidConfigurationParameterReason" xml:space="preserve">
+    <value>Invalid Configuration Parameter</value>
+  </data>
+  <data name="ErrorFailedToRetrieveTenantIdMessage" xml:space="preserve">
+    <value>Unable to retrieve Tenant ID from ADH token. The access token either lacks a claim for the Tenant Id or the payload of the token is malformed.</value>
+  </data>
+  <data name="ErrorFailedToRetrieveTenantIdReason" xml:space="preserve">
+    <value>Failed to retrieve Tenant Id from ADH token</value>
+  </data>
 </root>

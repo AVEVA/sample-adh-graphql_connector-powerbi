@@ -7,6 +7,7 @@ client_id = TryRetrieveParameterFromAppsettings("ClientId");
 
 // ADH values
 resource = TryRetrieveParameterFromAppsettings("Resource");
+namespace_id = TryRetrieveParameterFromAppsettings("NamespaceId");
 authorize_uri = Text.Combine({resource, "/identity/connect/authorize"});
 token_uri = Text.Combine({resource, "/identity/connect/token"});
 oauth_type = "OAuth";
@@ -54,7 +55,7 @@ windowHeight = 1024;
 shared DataHubGraphQLConnector.Contents = Value.ReplaceType(GraphQLQuery, GraphQLQueryType);
 
 GraphQLQueryType = type function (
-    namespaceId as (
+    optional namespaceId as (
         type text meta [
             Documentation.FieldCaption = Extension.LoadString("NamespaceCaption"),
             Documentation.FieldDescription = Extension.LoadString("NamespaceDescription")
@@ -64,8 +65,9 @@ GraphQLQueryType = type function (
     Documentation.Name = Extension.LoadString("ConnectorName")
 ];
 
-GraphQLQuery = (namespaceId as text) as any =>
+GraphQLQuery = (optional namespaceId as text) as any =>
     let
+        namespaceId = if namespaceId = null then namespace_id else namespaceId,
         emptyAccTokenRecord = [],
         clientCredentialToken = GetClientCredentialToken(emptyAccTokenRecord),
         tenantId = GetTenantId(clientCredentialToken),
@@ -382,7 +384,7 @@ Base64Padding = (base64Input as text) as text =>
         result;
 
 // Retrieves the value of a parameter in the appsettings json file
-shared TryRetrieveParameterFromAppsettings = (parameter as text) =>
+TryRetrieveParameterFromAppsettings = (parameter as text) =>
     let
         result =
             try
@@ -390,8 +392,8 @@ shared TryRetrieveParameterFromAppsettings = (parameter as text) =>
             otherwise
                 error
                     Error.Record(
-                        Extension.LoadString("ErrorInvalidParameterReason"),
-                        Extension.LoadString("ErrorInvalidParameterMessage") & parameter
+                        Extension.LoadString("ErrorInvalidConfigurationParameterReason"),
+                        Extension.LoadString("ErrorInvalidConfigurationParameterMessage") & parameter
                     )
     in
         result;
