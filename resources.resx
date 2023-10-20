@@ -123,4 +123,22 @@
   <data name="ButtonTitle" xml:space="preserve">
     <value>Sample AVEVA™ Data Hub GraphQL Events</value>
   </data>
+  <data name="NamespaceCaption" xml:space="preserve">
+    <value>Namespace Id</value>
+  </data>
+  <data name="NamespaceDescription" xml:space="preserve">
+    <value>The Id of the Namespace to query</value>
+  </data>
+  <data name="ConnectorName" xml:space="preserve">
+    <value>AVEVA Data Hub GraphQL</value>
+  </data>
+  <data name="ClientIdLabel" xml:space="preserve">
+    <value>AVEVA Data Hub GraphQL</value>
+  </data>
+  <data name="ClientSecretLabel" xml:space="preserve">
+    <value>AVEVA Data Hub GraphQL</value>
+  </data>
+  <data name="ClientCredentialsLabel" xml:space="preserve">
+    <value>AVEVA Data Hub GraphQL</value>
+  </data>
 </root>

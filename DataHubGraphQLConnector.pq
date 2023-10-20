@@ -9,7 +9,12 @@ client_id = TryRetrieveParameterFromAppsettings("ClientId");
 resource = TryRetrieveParameterFromAppsettings("Resource");
 authorize_uri = Text.Combine({resource, "/identity/connect/authorize"});
 token_uri = Text.Combine({resource, "/identity/connect/token"});
-scope = "ocsapi";
+oauth_type = "OAuth";
+scope = "ocsapi offline_access";
+client_scope = "ocsapi";
+user_name_password_type = "UsernamePassword";
+client_credentials_grant_type = "client_credentials";
+threshold_minutes = 5;
 
 // OAuth values for PowerBI
 redirect_uri = "https://oauth.powerbi.com/views/oauthredirect.html";
@@ -51,20 +56,21 @@ shared DataHubGraphQLConnector.Contents = Value.ReplaceType(GraphQLQuery, GraphQ
 GraphQLQueryType = type function (
     namespaceId as (
         type text meta [
-            Documentation.FieldCaption = "Namespace Id",
-            Documentation.FieldDescription = "The Id of the Namespace to query"
+            Documentation.FieldCaption = Extension.LoadString("NamespaceCaption"),
+            Documentation.FieldDescription = Extension.LoadString("NamespaceDescription")
         ]
     )
 ) as binary meta [
-    Documentation.Name = "AVEVA Data Hub GraphQL"
+    Documentation.Name = Extension.LoadString("ConnectorName")
 ];
 
-GraphQLQuery = (namespaceId as text) as function =>
+GraphQLQuery = (namespaceId as text) as any =>
     let
-        url = resource & "/api/v1/Tenants/" & GetTenantId() & "/Namespaces/" & namespaceId,
-        result = Json.Document(Web.Contents(url)),
-        self = result[Self],
-        query = GraphQL(self)
+        emptyAccTokenRecord = [],
+        clientCredentialToken = GetClientCredentialToken(emptyAccTokenRecord),
+        tenantId = GetTenantId(clientCredentialToken),
+        self = GetSelf(tenantId, namespaceId, clientCredentialToken),
+        query = GraphQL(self, clientCredentialToken)
     in
         query;
 
@@ -77,6 +83,11 @@ DataHubGraphQLConnector = [
             FinishLogin = FinishLogin,
             Refresh = Refresh,
             Logout = Logout
+        ],
+        UsernamePassword = [
+            UsernameLabel = Extension.LoadString("ClientIdLabel"),
+            PasswordLabel = Extension.LoadString("ClientSecretLabel"),
+            Label = Extension.LoadString("ClientCredentialsLabel")
         ]
     ]
 ];
@@ -106,32 +117,45 @@ DataHubConnector.Icons = [
     }
 ];
 
+GetSelf = (tenantId, namespaceId, optional ClientCredentialTokenRecord as record) as text =>
+    let
+        url = resource & "/api/v1/Tenants/" & tenantId & "/Namespaces/" & namespaceId,
+        response =
+            if (Extension.CurrentCredential()[AuthenticationKind] = oauth_type) then
+                Web.Contents(url, [IsRetry = true])
+            else
+                Web.Contents(
+                    url,
+                    [
+                        IsRetry = true,
+                        Headers = [
+                            #"Authorization" = "Bearer " & ClientCredentialTokenRecord[accessToken][access_token]
+                        ]
+                    ]
+                ),
+        result = Json.Document(response),
+        self = result[Self]
+    in
+        self;
+
 // Retrieves the tenant ID from the access token, which is in Json Web Token (JWT) format.
 // JWTs have three segments separated by periods ("."): a header, a payload, and a signature.
 // Claims are found in the payload segment, which is a JSON object that has been Base64 encoded.
 // The access token we recieve will have a "tid" claim which contains the tenant ID.
-GetTenantId = () as text =>
+GetTenantId = (optional ClientCredentialTokenRecord as record) as text =>
     let
         // Adds padding to a possibly invalid base64 string to create a valid base64 string.
-        AddBase64Padding = (base64Input as text) as text =>
-            let
-                base64LengthDivisor = 4,
-                base64PaddingCharacter = "=",
-                inputLength = Text.Length(base64Input),
-                charactersThatRequirePadding = Number.Mod(inputLength, base64LengthDivisor),
-                result =
-                    if charactersThatRequirePadding = 0 then
-                        base64Input
-                    else
-                        Text.PadEnd(
-                            base64Input,
-                            inputLength + (base64LengthDivisor - charactersThatRequirePadding),
-                            base64PaddingCharacter
-                        )
-            in
-                result,
-        jwt = Extension.CurrentCredential()[access_token],
-        segments = Text.Split(jwt, "."),
+        AddBase64Padding = Base64Padding,
+        jwtToken =
+            if (Extension.CurrentCredential()[AuthenticationKind] = oauth_type) then
+                [
+                    jwt = Extension.CurrentCredential()[access_token]
+                ]
+            else
+                [
+                    jwt = ClientCredentialTokenRecord[accessToken][access_token]
+                ],
+        segments = Text.Split(jwtToken[jwt], "."),
         encodedPayload = segments{1},
         paddedPayload = AddBase64Padding(encodedPayload),
         tenantId =
@@ -152,10 +176,10 @@ GetTenantId = () as text =>
     in
         tenantId;
 
-// Helper functions for OAuth2: StartLogin, FinishLogin, Refresh, Logout
-// Authorization Request, see https://www.oauth.com/oauth2-servers/pkce/authorization-request/
+// Obtains authorization code
 StartLogin = (dataSourcePath, state, display) =>
     let
+        resources = Json.Document(dataSourcePath),
         authorizeUrl = authorize_uri
             & "?"
             & Uri.BuildQueryString(
@@ -175,7 +199,10 @@ StartLogin = (dataSourcePath, state, display) =>
             CallbackUri = redirect_uri,
             WindowHeight = windowWidth,
             WindowWidth = windowHeight,
-            Context = null
+            Context = [
+                DataSourcePath = dataSourcePath,
+                CodeVerifier = code_verifier
+            ]
         ];
 
 // Extracts access_token from callbackUri
@@ -189,7 +216,7 @@ FinishLogin = (context, callbackUri, state) =>
             if Record.HasFields(parts, {"error", "error_description"}) then
                 error Error.Record(parts[error], parts[error_description], parts)
             else
-                TokenMethod("authorization_code", "code", parts[code])
+                GetAccessToken("authorization_code", parts[code], context[CodeVerifier])
     in
         result;
 
@@ -222,7 +249,8 @@ GetAccessToken = (grantType, grantValue, optional codeVerifier) =>
                 Headers = [
                     #"Content-type" = "application/x-www-form-urlencoded",
                     #"Accept" = "application/json"
-                ]
+                ],
+                IsRetry = true
             ]
         ),
         body = Json.Document(tokenResponse),
@@ -234,25 +262,27 @@ GetAccessToken = (grantType, grantValue, optional codeVerifier) =>
     in
         result;
 
-// Authorization Code Exchange, see https://www.oauth.com/oauth2-servers/pkce/authorization-code-exchange/
-TokenMethod = (grantType, tokenField, code) =>
+// Retrieves an access_token by using the client ID, client secret and client credentials(Grant type)
+GetAccessTokenClientCredential = (grantType, clientId, clientSecret) =>
     let
-        queryString = [
-            grant_type = "authorization_code",
-            redirect_uri = redirect_uri,
-            client_id = client_id,
-            code_verifier = code_verifier
-        ],
-        queryWithCode = Record.AddField(queryString, tokenField, code),
+        // If the code_verifier is null, then don't include it in the query string
+        // since this request is using a refresh_token which doesn't require PKCE values
+        queryString = []
+            & [
+                grant_type = client_credentials_grant_type,
+                client_id = clientId,
+                scope = client_scope,
+                client_secret = clientSecret
+            ],
         tokenResponse = Web.Contents(
             token_uri,
             [
-                Content = Text.ToBinary(Uri.BuildQueryString(queryWithCode)),
+                Content = Text.ToBinary(Uri.BuildQueryString(queryString)),
                 Headers = [
                     #"Content-type" = "application/x-www-form-urlencoded",
                     #"Accept" = "application/json"
                 ],
-                ManualStatusHandling = {400}
+                IsRetry = true
             ]
         ),
         body = Json.Document(tokenResponse),
@@ -264,8 +294,95 @@ TokenMethod = (grantType, tokenField, code) =>
     in
         result;
 
+//Fetching the accesstoken based on authentication method
+//This function will return record containing below structure
+//[accessToken : "<token>" ]
+GetClientCredentialToken = (optional CurrClientCredentialTokenRecord as record) as record =>
+    let
+        result =
+            if (Extension.CurrentCredential()[AuthenticationKind] = user_name_password_type) then
+                [
+                    // Check if the CurrClientCredentialTokenRecord is expiring
+                    data = if (
+                        Record.FieldCount(CurrClientCredentialTokenRecord) = 0
+                        or (
+                            Record.FieldCount(CurrClientCredentialTokenRecord) > 0
+                            and CheckAccessTokenExpiration(CurrClientCredentialTokenRecord) = "true"
+                        )
+                    ) then
+                        [
+                            // The accesstoken is about to expire, fetching new token
+                            accessToken = GetAccessTokenClientCredential(
+                                client_credentials_grant_type,
+                                Extension.CurrentCredential()[Username],
+                                Extension.CurrentCredential()[Password]
+                            )
+                        ]
+                    else
+                        [
+                            accessToken = CurrClientCredentialTokenRecord[accessToken]
+                        ]
+                ]
+            else
+                [
+                    data = [accessToken = Extension.CurrentCredential()[access_token]]
+                ]
+    in
+        result[data];
+
+// The access token we recieve will have a "exp" claim which contains the expiry time.
+// This function will check if the token passed has validity for the next 5 minutes
+CheckAccessTokenExpiration = (optional ClientCredentialTokenRecord as record) as text =>
+    let
+        // Adds padding to a possibly invalid base64 string to create a valid base64 string.
+        AddBase64Padding = Base64Padding,
+        jwt = ClientCredentialTokenRecord[accessToken][access_token],
+        segments = Text.Split(jwt, "."),
+        encodedPayload = segments{1},
+        paddedPayload = AddBase64Padding(encodedPayload),
+        isExpired =
+            try
+                let
+                    decodedPayload = Text.FromBinary(
+                        Binary.FromText(paddedPayload, BinaryEncoding.Base64), TextEncoding.Utf8
+                    ),
+                    UnixTime_Exp = Json.Document(decodedPayload)[exp],
+                    // To Convert unix time to minutes.
+                    expiryDateTime = #datetimezone(1970, 1, 1, 0, 0, 0, 0, 0) + #duration(0, 0, 00, UnixTime_Exp),
+                    remainingMinutes = Duration.Minutes(expiryDateTime - DateTimeZone.UtcNow()),
+                    result = if (remainingMinutes <= threshold_minutes) then "true" else "false"
+                in
+                    result
+            otherwise
+                error
+                    Error.Record(
+                        Extension.LoadString("ErrorFailedToRetrieveExpTimeReason"),
+                        Extension.LoadString("ErrorFailedToRetrieveExpTimeMessage")
+                    )
+    in
+        isExpired;
+
+Base64Padding = (base64Input as text) as text =>
+    // Adds padding to a possibly invalid base64 string to create a valid base64 string.
+    let
+        base64LengthDivisor = 4,
+        base64PaddingCharacter = "=",
+        inputLength = Text.Length(base64Input),
+        charactersThatRequirePadding = Number.Mod(inputLength, base64LengthDivisor),
+        result =
+            if charactersThatRequirePadding = 0 then
+                base64Input
+            else
+                Text.PadEnd(
+                    base64Input,
+                    inputLength + (base64LengthDivisor - charactersThatRequirePadding),
+                    base64PaddingCharacter
+                )
+    in
+        result;
+
 // Retrieves the value of a parameter in the appsettings json file
-TryRetrieveParameterFromAppsettings = (parameter as text) =>
+shared TryRetrieveParameterFromAppsettings = (parameter as text) =>
     let
         result =
             try

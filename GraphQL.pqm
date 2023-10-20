@@ -1,27 +1,52 @@
-(self as text) =>
+(self as text, optional ClientCredentialTokenRecord as record) =>
     let
-        GetContinuation = (response) as nullable text => Record.FieldOrDefault(Record.FieldOrDefault(response, "extensions"),"continuation"),
+        GetContinuation = (response) as nullable text =>
+            Record.FieldOrDefault(Record.FieldOrDefault(response, "extensions"), "continuation"),
         GraphQLQuery = (query as text, continuation as nullable text) as table =>
             let
                 Uri = Text.Replace(self, "/api/v1/", "/api/v1-preview/") & "/graphql",
                 UriWithContinuation = if continuation = null then Uri else Uri & "?continuation=" & continuation,
-                formattedQuery = "{""query"": """ & Text.Replace(Text.Replace(query, "#(lf)", "\r\n"), """", "\""") & """, ""variables"":{}}",
-                getJsonQuery = Json.Document(
-                    Web.Contents(
-                        UriWithContinuation,
-                        [
-                            Headers = [
-                                #"Method" = "POST",
-                                #"Content-Type" = "application/json"
-                            ],
-                            Content = Text.ToBinary(formattedQuery)
-                        ]
-                    )
-                ),
+                formattedQuery = "{""query"": """
+                    & Text.Replace(Text.Replace(query, "#(lf)", "\r\n"), """", "\""")
+                    & """, ""variables"":{}}",
+                response =
+                    if (Extension.CurrentCredential()[AuthenticationKind] = "OAuth") then
+                        Web.Contents(
+                            UriWithContinuation,
+                            [
+                                Headers = [
+                                    #"Method" = "POST",
+                                    #"Content-Type" = "application/json"
+                                ],
+                                Content = Text.ToBinary(formattedQuery),
+                                IsRetry = true
+                            ]
+                        )
+                    else
+                        Web.Contents(
+                            UriWithContinuation,
+                            [
+                                Headers = [
+                                    #"Authorization" = "Bearer "
+                                        & ClientCredentialTokenRecord[accessToken][access_token],
+                                    #"Method" = "POST",
+                                    #"Content-Type" = "application/json"
+                                ],
+                                Content = Text.ToBinary(formattedQuery),
+                                IsRetry = true
+                            ]
+                        ),
+                getJsonQuery = Json.Document(response),
                 newContinuation = GetContinuation(getJsonQuery),
                 data = Record.FieldOrDefault(getJsonQuery, "data"),
                 tableOfData = Record.ToTable(data),
-                expandedTableOfData = Table.ExpandRecordColumn(tableOfData, "Value", {"assets", "referenceData", "events"}, {"assets", "referenceData", "events"})
+                expandedTableOfData = Table.ExpandRecordColumn(
+                    tableOfData, "Value", {"assets", "referenceData", "events"}, {
+                        "assets",
+                        "referenceData",
+                        "events"
+                    }
+                )
             in
                 tableOfData meta [Continuation = newContinuation],
         // Read all pages of data.
