@@ -45,7 +45,7 @@ Note: For more information refer to [Microsoft's distribution documentation](htt
 1. Generate a graph QL query within AVEVA Data Hub using the [GraphQL console](https://docs.aveva.com/bundle/aveva-data-hub/page/1263333.html) to be used later.
 1. From Power BI Desktop, open Home > Get Data > More
 1. The connector should be available as "Sample AVEVA™ Data Hub QraphQL Events (Beta)" in the category "Online Services"
-1. Either select "Organizational account" and click "Sign In" or select "Client Credentials" and provide the client credenitals created ahead of time
+1. Either select "Organizational account" and click "Sign In" or select "Client Credentials" and provide the client credenitals you created ahead of time
 1. Click "Connect"
 1. If using the connector for the first time, you may get another warning regarding untrusted connectors
 1. When prompted for the Namespace Id, enter your Namespace Id
