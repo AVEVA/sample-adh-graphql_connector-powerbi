@@ -60,7 +60,9 @@ jobs:
         inputs:
           targetType: 'inline'
           script: |
-            $Results = Get-Content -Path results.json | ConvertFrom-Json
+            $Results = Get-Content -Path results.json
+            $Results
+            $Results = $Results | ConvertFrom-Json
             if ($Results.Status -eq "Passed") {
                 echo "Success"
                 exit 0
