@@ -132,7 +132,8 @@ GetSelf = (tenantId, namespaceId, optional ClientCredentialTokenRecord as record
                         IsRetry = true,
                         Headers = [
                             #"Authorization" = "Bearer " & ClientCredentialTokenRecord[accessToken][access_token]
-                        ]
+                        ],
+                        ManualCredentials = true
                     ]
                 ),
         result = Json.Document(response),

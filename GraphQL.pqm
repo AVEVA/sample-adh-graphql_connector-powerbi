@@ -33,7 +33,8 @@
                                     #"Content-Type" = "application/json"
                                 ],
                                 Content = Text.ToBinary(formattedQuery),
-                                IsRetry = true
+                                IsRetry = true,
+                                ManualCredentials = true
                             ]
                         ),
                 getJsonQuery = Json.Document(response),
