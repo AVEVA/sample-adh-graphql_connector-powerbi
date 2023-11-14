@@ -7,6 +7,9 @@ The Sample AVEVA Data Hub Graph QL Connector for Power BI Desktop is used to get
 ## Power BI Deployment Requirement
 
 1. [Power BI Desktop](https://powerbi.microsoft.com/en-us/desktop/)
+1. Optionally register a [Client-Credentials Client](https://datahub.connect.aveva.com/clients) in your AVEVA Data Hub tenant and create a client secret to use in Power BI. ([Video Walkthrough](https://www.youtube.com/watch?v=JPWy0ZX9niU))
+  - __NOTE__: This sample only requires read access to resources (Streams, Assets, etc.) to run successfully
+  - It is strongly advised to not elevate the permissions of a client beyond what is necessary.
 
 ## Build Requirements
 
@@ -42,7 +45,8 @@ Note: For more information refer to [Microsoft's distribution documentation](htt
 1. Generate a graph QL query within AVEVA Data Hub using the [GraphQL console](https://docs.aveva.com/bundle/aveva-data-hub/page/1263333.html) to be used later.
 1. From Power BI Desktop, open Home > Get Data > More
 1. The connector should be available as "Sample AVEVA™ Data Hub QraphQL Events (Beta)" in the category "Online Services"
-1. Select it and click "Connect"
+1. Either select "Organizational account" and click "Sign In" or select "Client Credentials" and provide the client credenitals you created ahead of time
+1. Click "Connect"
 1. If using the connector for the first time, you may get another warning regarding untrusted connectors
 1. When prompted for the Namespace Id, enter your Namespace Id
 1. Click OK, and you will be prompted to login if you have not already, using an organizational account
