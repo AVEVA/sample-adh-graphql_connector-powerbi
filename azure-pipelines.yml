@@ -1,0 +1,73 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+schedules:
+  - cron: '0 0 * * 0'
+    displayName: Weekly build
+    branches:
+      include:
+        - main
+    always: true
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: AVEVA/AVEVA-Samples
+      endpoint: AVEVA
+
+variables:
+  - name: analysisProject
+    value: OCS_DataRetrieval_PowerQuery
+
+jobs:
+  - job: Tests
+    pool:
+      name: DevOps Managed Containers Build
+      demands: Agent.OS -equals Windows_NT
+    steps:
+      - template: '/miscellaneous/build_templates/appsettings.yml@templates'
+        parameters:
+          secrets: 'NamespaceId, ClientId, ClientSecret'
+      
+      - task: CmdLine@2
+        inputs:
+          script: |
+            echo Downloading and extracting power query tools
+            mkdir pqsdktools
+            cd pqsdktools
+            curl https://www.nuget.org/api/v2/package/Microsoft.PowerQuery.SdkTools -L --output PQSDKTools.npkg
+            tar -xf PQSDKTools.npkg
+            cd ..
+            echo Compiling extension
+            pqsdktools\tools\MakePQX.exe compile
+            echo Setting credentials
+            echo {"AuthenticationKind": "UsernamePassword", "AuthenticationProperties": {"Username": "$(ClientId)", "Password": "$(ClientSecret)"}} > cred.json
+            pqsdktools\tools\PQTest.exe set-credential --extension "bin\AnyCPU\Debug\s.mez" --queryFile "DataHubGraphQLConnector.query.pq" --prettyPrint < cred.json
+            echo Running unit tests
+            pqsdktools\tools\PQTest.exe run-test --extension "bin\AnyCPU\Debug\s.mez" --queryFile "DataHubGraphQLConnector.query.pq" --prettyPrint > results.json
+        displayName: Run Tests
+        
+      - task: PowerShell@2
+        inputs:
+          targetType: 'inline'
+          script: |
+            $Results = Get-Content -Path results.json
+            $Results
+            $Results = $Results | ConvertFrom-Json
+            if ($Results.Status -eq "Passed") {
+                echo "Success"
+                exit 0
+            } else {
+                echo "Failure"
+                exit 1
+            }
+        displayName: Check Results
