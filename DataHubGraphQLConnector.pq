@@ -55,7 +55,7 @@ windowHeight = 1024;
 shared DataHubGraphQLConnector.Contents = Value.ReplaceType(GraphQLQuery, GraphQLQueryType);
 
 GraphQLQueryType = type function (
-    optional namespaceId as (
+    namespaceId as (
         type text meta [
             Documentation.FieldCaption = Extension.LoadString("NamespaceCaption"),
             Documentation.FieldDescription = Extension.LoadString("NamespaceDescription")
@@ -65,9 +65,9 @@ GraphQLQueryType = type function (
     Documentation.Name = Extension.LoadString("ConnectorName")
 ];
 
-GraphQLQuery = (optional namespaceId as text) as any =>
+GraphQLQuery = (namespaceId as text) as any =>
     let
-        namespaceId = if namespaceId = null then namespace_id else namespaceId,
+        namespaceId = if namespaceId = "" then namespace_id else namespaceId,
         emptyAccTokenRecord = [],
         clientCredentialToken = GetClientCredentialToken(emptyAccTokenRecord),
         tenantId = GetTenantId(clientCredentialToken),
