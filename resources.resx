@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ButtonHelp" xml:space="preserve">
-    <value>Connect to AVEVA™ Data Hub Events with Graph QL</value>
+    <value>Connect to CONNECT data services Events with Graph QL</value>
   </data>
   <data name="ButtonTitle" xml:space="preserve">
-    <value>Sample AVEVA™ Data Hub GraphQL Events</value>
+    <value>Sample CONNECT data services GraphQL Events</value>
   </data>
   <data name="NamespaceCaption" xml:space="preserve">
     <value>Namespace Id</value>
@@ -130,16 +130,16 @@
     <value>The Id of the Namespace to query</value>
   </data>
   <data name="ConnectorName" xml:space="preserve">
-    <value>AVEVA Data Hub GraphQL</value>
+    <value>CONNECT data services GraphQL</value>
   </data>
   <data name="ClientIdLabel" xml:space="preserve">
-    <value>AVEVA Data Hub GraphQL</value>
+    <value>Client Id : </value>
   </data>
   <data name="ClientSecretLabel" xml:space="preserve">
-    <value>AVEVA Data Hub GraphQL</value>
+    <value>Client Secret : </value>
   </data>
   <data name="ClientCredentialsLabel" xml:space="preserve">
-    <value>AVEVA Data Hub GraphQL</value>
+    <value>Client Credentials</value>
   </data>
   <data name="OAuthType" xml:space="preserve">
     <value>OAuth</value>

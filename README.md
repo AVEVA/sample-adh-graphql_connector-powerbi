@@ -27,6 +27,12 @@ The Sample AVEVA Data Hub Graph QL Connector for Power BI Desktop is used to get
 1. Rename `appsettings.placeholder.json` to `appsettings.json`
 1. Update the ClientId parameter in `appsettings.json` with the client generated in the [Build Requirements](#build-requirements) section
 1. Optionally update the Resource parameter in `appsettings.json` if you are using a different region or non-production enivornment
+1. Build the project by following below steps
+   - Assuming "Power Query SDK" Extension is installed, As mentioned in [Build Requirements](#build-requirements)
+   - In Visual Studio Code, Navigate to Main Menu (Top Bar) --> Terminal.
+   - Select option `Run Build Task` -> `build: Build connector project using MakePQX`
+   - Once Completed successfully, `*.mez` files are generated and available in `/bin/AnyCPU/Debug` or `/bin/AnyCPU/Release`.
+
 1. Build the project following [Microsoft's build and deploy documentaion](https://learn.microsoft.com/en-us/power-query/install-sdk#build-and-deploy)
 
 ## Deploying the Sample Connector

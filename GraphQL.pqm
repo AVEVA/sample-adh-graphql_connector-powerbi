@@ -103,8 +103,8 @@
                 ]
             )
         ) as binary meta [
-            Documentation.LongDescription = "Submit a GraphQL query to AVEVA Data Hub",
-            Documentation.Name = "AVEVA Data Hub GraphQL"
+            Documentation.LongDescription = "Submit a GraphQL query to CONNECT data services",
+            Documentation.Name = "CONNECT data services GraphQL"
         ],
         // Format GraphQL Request
         GraphQLRequest = Value.ReplaceType(GetAllPagesByNextLink, GraphQLQueryType)
