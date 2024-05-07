@@ -11,11 +11,13 @@ namespace_id = TryRetrieveParameterFromAppsettings("NamespaceId");
 authorize_uri = Text.Combine({resource, "/identity/connect/authorize"});
 token_uri = Text.Combine({resource, "/identity/connect/token"});
 oauth_type = "OAuth";
-scope = "ocsapi offline_access";
+scope = "ocsapi";
 client_scope = "ocsapi";
 user_name_password_type = "UsernamePassword";
 client_credentials_grant_type = "client_credentials";
 threshold_minutes = 5;
+
+status_codes_to_handle_manually = {400, 403, 404, 408, 409, 500, 502, 503, 504};
 
 // OAuth values for PowerBI
 redirect_uri = "https://oauth.powerbi.com/views/oauthredirect.html";
@@ -253,7 +255,7 @@ GetAccessToken = (grantType, grantValue, optional codeVerifier) =>
                     #"Content-type" = "application/x-www-form-urlencoded",
                     #"Accept" = "application/json"
                 ],
-                IsRetry = true
+                ManualStatusHandling = status_codes_to_handle_manually, IsRetry=true, ManualCredentials=true 
             ]
         ),
         body = Json.Document(tokenResponse),
