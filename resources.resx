@@ -145,10 +145,10 @@
     <value>OAuth</value>
   </data>
   <data name="ErrorFailedToRetrieveExpTimeMessage" xml:space="preserve">
-    <value>Unable to retrieve expiry time from ADH token. The access token either does  not have the expiry time or the payload of the token is malformed.</value>
+    <value>Unable to retrieve expiry time from Cds token. The access token either does  not have the expiry time or the payload of the token is malformed.</value>
   </data>
   <data name="ErrorFailedToRetrieveExpTimeReason" xml:space="preserve">
-    <value>Failed to retrieve expiry time from ADH token</value>
+    <value>Failed to retrieve expiry time from Cds token</value>
   </data>
   <data name="ErrorInvalidConfigurationParameterMessage" xml:space="preserve">
     <value>Failed to retrieve configuration parameter from file 'ADHConnectorConfiguration.json'. Parameter Name: </value>
@@ -157,9 +157,9 @@
     <value>Invalid Configuration Parameter</value>
   </data>
   <data name="ErrorFailedToRetrieveTenantIdMessage" xml:space="preserve">
-    <value>Unable to retrieve Tenant ID from ADH token. The access token either lacks a claim for the Tenant Id or the payload of the token is malformed.</value>
+    <value>Unable to retrieve Tenant ID from Cds token. The access token either lacks a claim for the Tenant Id or the payload of the token is malformed.</value>
   </data>
   <data name="ErrorFailedToRetrieveTenantIdReason" xml:space="preserve">
-    <value>Failed to retrieve Tenant Id from ADH token</value>
+    <value>Failed to retrieve Tenant Id from Cds token</value>
   </data>
 </root>

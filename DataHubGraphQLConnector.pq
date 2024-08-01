@@ -5,7 +5,7 @@ section DataHubGraphQLConnector;
 // Note: Client ID should be an Authorization Code Client with the below redirect_uri and logout_uri
 client_id = TryRetrieveParameterFromAppsettings("ClientId");
 
-// ADH values
+// Cds values
 resource = TryRetrieveParameterFromAppsettings("Resource");
 namespace_id = TryRetrieveParameterFromAppsettings("NamespaceId");
 authorize_uri = Text.Combine({resource, "/identity/connect/authorize"});
