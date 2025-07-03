@@ -1,13 +1,13 @@
-# AVEVA Data Hub Sample Graph QL Power BI Connector
+# CONNECT data services Sample Graph QL Power BI Connector
 
 **Version:** 1.0.0
 
-The Sample AVEVA Data Hub Graph QL Connector for Power BI Desktop is used to get event data from the ADH API into Power BI Desktop. The connector uses the OAuth Authorization Code with PKCE flow to connect to the API and get an access token.
+The Sample CONNECT data services Graph QL Connector for Power BI Desktop is used to get event data from the Cds API into Power BI Desktop. The connector uses the OAuth Authorization Code with PKCE flow to connect to the API and get an access token.
 
 ## Power BI Deployment Requirement
 
 1. [Power BI Desktop](https://powerbi.microsoft.com/en-us/desktop/)
-1. Optionally register a [Client-Credentials Client](https://datahub.connect.aveva.com/clients) in your AVEVA Data Hub tenant and create a client secret to use in Power BI. ([Video Walkthrough](https://www.youtube.com/watch?v=JPWy0ZX9niU))
+1. Optionally register a [Client-Credentials Client](https://datahub.connect.aveva.com/clients) in your CONNECT data services tenant and create a client secret to use in Power BI. ([Video Walkthrough](https://www.youtube.com/watch?v=JPWy0ZX9niU))
   - __NOTE__: This sample only requires read access to resources (Streams, Assets, etc.) to run successfully
   - It is strongly advised to not elevate the permissions of a client beyond what is necessary.
 
@@ -15,7 +15,7 @@ The Sample AVEVA Data Hub Graph QL Connector for Power BI Desktop is used to get
 
 1. [Visual Studio Code](https://code.visualstudio.com/)
 1. [Power Query SDK](https://marketplace.visualstudio.com/items?itemName=PowerQuery.vscode-powerquery-sdk)
-1. Register an Authorization Code Client in ADH and ensure that the registered client:
+1. Register an Authorization Code Client in Cds and ensure that the registered client:
    - Contains `https://oauth.powerbi.com/views/oauthredirect.html` in the list of Allowed Redirect URLs
    - Contains `https://login.microsoftonline.com/logout.srf` in the list of Allowed Logout Redirect URLs
    - Contains `https://oauth.powerbi.com` in the list of Allowed CORS Origins
@@ -48,7 +48,7 @@ Note: For more information refer to [Microsoft's distribution documentation](htt
 
 ## Using the Sample Connector
 
-1. Generate a graph QL query within AVEVA Data Hub using the [GraphQL console](https://docs.aveva.com/bundle/aveva-data-hub/page/1263333.html) to be used later.
+1. Generate a graph QL query within CONNECT data services using the [GraphQL console](https://docs.aveva.com/bundle/aveva-data-hub/page/1263333.html) to be used later.
 1. From Power BI Desktop, open Home > Get Data > More
 1. The connector should be available as "Sample AVEVA™ Data Hub QraphQL Events (Beta)" in the category "Online Services"
 1. Either select "Organizational account" and click "Sign In" or select "Client Credentials" and provide the client credenitals you created ahead of time
@@ -82,5 +82,5 @@ At this point, the data should be consumable in a Power BI Dashboard!
 
 ---
 
-For the main ADH samples page [ReadMe](https://github.com/osisoft/OSI-Samples-OCS)  
+For the main Cds samples page [ReadMe](https://github.com/osisoft/OSI-Samples-OCS)  
 For the main AVEVA samples page [ReadMe](https://github.com/osisoft/OSI-Samples)
